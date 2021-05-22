@@ -520,21 +520,21 @@ NodePtr read_function_pointer_typedef(const TranslationUnit::Ptr& tu,
 }
 
 //------------------------------------------------------------------------------
-NodePtr read_node(const TranslationUnit::Ptr& tu, const nln::json& json) {
-    auto kind = json[KIND].get<std::string>();
+NodePtr read_node(const TranslationUnit::Ptr& tu, const CurrentObject co) {
+    auto kind = co.json[KIND].get<std::string>();
 
     if (kind == RECORD_C) {
-        return read_record(tu, json);
+        return read_record(tu, co.json);
     } else if (kind == ENUM_C) {
-        return read_enum(tu, json);
+        return read_enum(tu, co.json);
     } else if (kind == FUNCTION_C) {
-        return read_function(tu, json);
+        return read_function(tu, co.json);
     } else if (kind == NAMESPACE_C) {
-        return read_namespace(tu, json);
+        return read_namespace(tu, co.json);
     } else if (kind == VAR_C) {
-        return read_var(tu, json);
+        return read_var(tu, co.json);
     } else if (kind == FUNCTION_POINTER_TYPEDEF_C) {
-        return read_function_pointer_typedef(tu, json);
+        return read_function_pointer_typedef(tu, co.json);
     }
 
     panic("Unhandled node kind {}", kind);
@@ -569,7 +569,7 @@ TranslationUnit::Ptr read_translation_unit(const nln::json& json) {
     auto filename = json[FILENAME].get<std::string>();
 
     // Read the standard template library type
-    auto standard_template_lib = read_standard_template_lib(json);
+    auto stl = read_standard_template_lib(json);
 
     // Instantiate the translation unit
     auto result = TranslationUnit::new_(filename);
@@ -586,7 +586,8 @@ TranslationUnit::Ptr read_translation_unit(const nln::json& json) {
 
     // Parse the elements of the translation unit
     for (const auto& i : json[DECLS]) {
-        result->decls.push_back(read_node(result, i));
+        auto co = CurrentObject{ stl, i };
+        result->decls.push_back(read_node(result, co));
     }
 
     // Return the result
