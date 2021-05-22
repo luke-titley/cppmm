@@ -11,13 +11,14 @@ enum class StandardTemplateLib : uint32_t {
 };
 
 namespace remap {
-    // Namespace
-    std::string namespace_qualified(const std::string & val);
-    std::string namespace_short(const std::string & val);
+// Namespace
+std::string namespace_qualified(StandardTemplateLib stl,
+                                const std::string& val);
+std::string namespace_short(StandardTemplateLib stl, const std::string& val);
 
-    // Record
-    std::string record_qualified(const std::string & val);
-    std::string record_short(const std::string & val);
+// Record
+std::string record_qualified(StandardTemplateLib stl, const std::string& val);
+std::string record_short(StandardTemplateLib stl, const std::string& val);
 } // namespace remap
 
 } // namespace cppmm

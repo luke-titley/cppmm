@@ -238,7 +238,7 @@ NodeTypePtr read_type_function_proto(const nln::json& json) {
 
 //------------------------------------------------------------------------------
 NodePtr read_function(const TranslationUnit::Ptr& tu, const CurrentObject co) {
-    auto json = co.json; 
+    auto json = co.json;
 
     // ignore for the moment
     auto attrs = read_attrs(json);
@@ -346,8 +346,10 @@ NodePtr read_record(const TranslationUnit::Ptr& tu, const CurrentObject co) {
     Id id = json[ID].get<Id>();
     auto size = json[SIZE].get<uint64_t>();
     auto align = json[ALIGN].get<uint64_t>();
-    auto qual_name = json[NAME].get<std::string>();
-    auto name = json[SHORT_NAME].get<std::string>();
+    auto qual_name =
+        remap::record_qualified(co.stl, json[NAME].get<std::string>());
+    auto name =
+        remap::record_short(co.stl, json[SHORT_NAME].get<std::string>());
 
     // Find if abstract
     auto abstract = false;
@@ -599,7 +601,7 @@ TranslationUnit::Ptr read_translation_unit(const nln::json& json) {
 
     // Parse the elements of the translation unit
     for (const auto& i : json[DECLS]) {
-        auto co = CurrentObject{ stl, i };
+        auto co = CurrentObject{stl, i};
         result->decls.push_back(read_node(result, co));
     }
 
