@@ -237,7 +237,9 @@ NodeTypePtr read_type_function_proto(const nln::json& json) {
 }
 
 //------------------------------------------------------------------------------
-NodePtr read_function(const TranslationUnit::Ptr& tu, const nln::json& json) {
+NodePtr read_function(const TranslationUnit::Ptr& tu, const CurrentObject co) {
+    auto json = co.json; 
+
     // ignore for the moment
     auto attrs = read_attrs(json);
 
@@ -533,7 +535,7 @@ NodePtr read_node(const TranslationUnit::Ptr& tu, const CurrentObject co) {
     } else if (kind == ENUM_C) {
         return read_enum(tu, co);
     } else if (kind == FUNCTION_C) {
-        return read_function(tu, co.json);
+        return read_function(tu, co);
     } else if (kind == NAMESPACE_C) {
         return read_namespace(tu, co.json);
     } else if (kind == VAR_C) {
