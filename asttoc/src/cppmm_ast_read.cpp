@@ -3,6 +3,7 @@
 // vfx-rs
 //------------------------------------------------------------------------------
 #include "cppmm_ast_read.hpp"
+#include "cppmm_stl_remapping.hpp"
 #include "base64.hpp"
 #include "filesystem.hpp"
 #include "json.hh"
@@ -84,6 +85,11 @@ const char* TEMPLATE_ARGS = "template_args";
 const char* OPAQUE_TYPE = "opaque_type";
 const char* NOEXCEPT = "noexcept";
 } // namespace
+
+struct CurrentObject {
+    StandardTemplateLib m_stl;
+    const nln::json& json;
+};
 
 //------------------------------------------------------------------------------
 NodeTypePtr read_type(const nln::json& json);
