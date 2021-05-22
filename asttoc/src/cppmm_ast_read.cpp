@@ -487,12 +487,14 @@ NodePtr read_namespace(const TranslationUnit::Ptr& tu, const CurrentObject co) {
 
     // Dont ignore these
     Id id = json[ID].get<Id>();
-    auto name = json[NAME].get<std::string>();
-    auto short_name = json[SHORT_NAME].get<std::string>();
+    auto name = remap::namespace_(co.stl, json[NAME].get<std::string>(),
+                                  json[SHORT_NAME].get<std::string>());
+
     auto alias = json[ALIAS].get<std::string>();
     auto collapse = json[COLLAPSE].get<bool>();
 
-    auto result = NodeNamespace::n(name, id, short_name, alias, collapse);
+    auto result =
+        NodeNamespace::n(name.qualified, id, name.short_, alias, collapse);
 
     // Return the result
     return result;
