@@ -459,7 +459,9 @@ NodePtr read_enum(const TranslationUnit::Ptr& tu, CurrentObject co) {
 }
 
 //------------------------------------------------------------------------------
-NodePtr read_var(const TranslationUnit::Ptr& tu, const nln::json& json) {
+NodePtr read_var(const TranslationUnit::Ptr& tu, const CurrentObject co) {
+    auto json = co.json;
+
     // Ignore these for the moment
     std::vector<std::string> _attrs;
 
@@ -497,7 +499,9 @@ NodePtr read_namespace(const TranslationUnit::Ptr& tu, const CurrentObject co) {
 
 //------------------------------------------------------------------------------
 NodePtr read_function_pointer_typedef(const TranslationUnit::Ptr& tu,
-                                      const nln::json& json) {
+                                      const CurrentObject co) {
+    auto json = co.json;
+
     // Ignore these for the moment
     std::vector<std::string> _attrs;
 
@@ -541,9 +545,9 @@ NodePtr read_node(const TranslationUnit::Ptr& tu, const CurrentObject co) {
     } else if (kind == NAMESPACE_C) {
         return read_namespace(tu, co);
     } else if (kind == VAR_C) {
-        return read_var(tu, co.json);
+        return read_var(tu, co);
     } else if (kind == FUNCTION_POINTER_TYPEDEF_C) {
-        return read_function_pointer_typedef(tu, co.json);
+        return read_function_pointer_typedef(tu, co);
     }
 
     panic("Unhandled node kind {}", kind);
