@@ -88,7 +88,7 @@ const char* NOEXCEPT = "noexcept";
 } // namespace
 
 struct CurrentObject {
-    StandardTemplateLib m_stl;
+    StandardTemplateLib stl;
     const nln::json& json;
 };
 
@@ -346,10 +346,8 @@ NodePtr read_record(const TranslationUnit::Ptr& tu, const CurrentObject co) {
     Id id = json[ID].get<Id>();
     auto size = json[SIZE].get<uint64_t>();
     auto align = json[ALIGN].get<uint64_t>();
-    auto qual_name =
-        remap::record_qualified(co.stl, json[NAME].get<std::string>());
-    auto name =
-        remap::record_short(co.stl, json[SHORT_NAME].get<std::string>());
+    auto name = remap::record(co.stl, json[NAME].get<std::string>(),
+                              json[SHORT_NAME].get<std::string>());
 
     // Find if abstract
     auto abstract = false;
@@ -380,7 +378,7 @@ NodePtr read_record(const TranslationUnit::Ptr& tu, const CurrentObject co) {
     // Override the name with an alias if one is provided
     auto alias = json.find(ALIAS);
     if (alias != json.end()) {
-        name = alias->get<std::string>();
+        name.short_ = alias->get<std::string>();
     }
 
     // Namespaces
@@ -396,9 +394,10 @@ NodePtr read_record(const TranslationUnit::Ptr& tu, const CurrentObject co) {
     auto comment = read_comment(json);
 
     // Instantiate the translation unit
-    auto result = NodeRecord::n(
-        tu, qual_name, id, attrs, size, align, name, namespaces, abstract,
-        trivially_copyable, trivially_movable, opaque_type, std::move(comment));
+    auto result =
+        NodeRecord::n(tu, name.qualified, id, attrs, size, align, name.short_,
+                      namespaces, abstract, trivially_copyable,
+                      trivially_movable, opaque_type, std::move(comment));
 
     // Pull out the methods
     for (const auto& i : json[METHODS]) {

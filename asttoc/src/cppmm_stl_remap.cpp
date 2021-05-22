@@ -7,22 +7,16 @@ namespace cppmm {
 namespace remap {
 
 // Namespace
-std::string namespace_qualified(StandardTemplateLib stl,
-                                const std::string& val) {
-    return val;
-}
+Remapped namespace_(StandardTemplateLib stl, const std::string& qualified,
+                    const std::string& short_) {
 
-std::string namespace_short(StandardTemplateLib stl, const std::string& val) {
-    return val;
+    return Remapped{qualified, short_};
 }
 
 // Record
-std::string record_qualified(StandardTemplateLib stl, const std::string& val) {
-    return val;
-}
-
-std::string record_short(StandardTemplateLib stl, const std::string& val) {
-    return val;
+Remapped record(StandardTemplateLib stl, const std::string& qualified,
+                const std::string& short_) {
+    return Remapped{qualified, short_};
 }
 
 } // namespace remap
