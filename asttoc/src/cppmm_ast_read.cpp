@@ -476,7 +476,9 @@ NodePtr read_var(const TranslationUnit::Ptr& tu, const nln::json& json) {
 }
 
 //------------------------------------------------------------------------------
-NodePtr read_namespace(const TranslationUnit::Ptr& tu, const nln::json& json) {
+NodePtr read_namespace(const TranslationUnit::Ptr& tu, const CurrentObject co) {
+    auto json = co.json;
+
     // Ignore these for the moment
     std::vector<std::string> _attrs;
 
@@ -537,7 +539,7 @@ NodePtr read_node(const TranslationUnit::Ptr& tu, const CurrentObject co) {
     } else if (kind == FUNCTION_C) {
         return read_function(tu, co);
     } else if (kind == NAMESPACE_C) {
-        return read_namespace(tu, co.json);
+        return read_namespace(tu, co);
     } else if (kind == VAR_C) {
         return read_var(tu, co.json);
     } else if (kind == FUNCTION_POINTER_TYPEDEF_C) {
