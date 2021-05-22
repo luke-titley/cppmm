@@ -3,8 +3,8 @@
 // vfx-rs
 //------------------------------------------------------------------------------
 #include "cppmm_ast_read.hpp"
-#include "cppmm_stl_remapping.hpp"
 #include "base64.hpp"
+#include "cppmm_stl_remapping.hpp"
 #include "filesystem.hpp"
 #include "json.hh"
 
@@ -81,6 +81,7 @@ const char* VAR_C = "Var";
 const char* ELEMENT_TYPE = "element_type";
 const char* FUNCTION_POINTER_TYPEDEF_C = "FunctionPointerTypedef";
 const char* FUNCTION_POINTER_TYPEDEF_L = "function_pointer_typedef";
+const char* STL = "standard_template_library";
 const char* TEMPLATE_ARGS = "template_args";
 const char* OPAQUE_TYPE = "opaque_type";
 const char* NOEXCEPT = "noexcept";
@@ -542,9 +543,33 @@ NodePtr read_node(const TranslationUnit::Ptr& tu, const nln::json& json) {
 }
 
 //------------------------------------------------------------------------------
+StandardTemplateLib read_standard_template_lib(const nln::json& json) {
+    auto stl = StandardTemplateLib::kstdcpp;
+    std::string stl_str;
+    auto stl_ = json.find(STL);
+    if (stl_ != json.end()) {
+
+        // stdcpp
+        if (stl_->get<std::string>() == "stdcpp") {
+            stl = StandardTemplateLib::kstdcpp;
+        }
+
+        // cpp
+        else if (stl_->get<std::string>() == "cpp") {
+            stl = StandardTemplateLib::kcpp;
+        }
+    }
+
+    return stl;
+}
+
+//------------------------------------------------------------------------------
 TranslationUnit::Ptr read_translation_unit(const nln::json& json) {
     // Read the translation unit
     auto filename = json[FILENAME].get<std::string>();
+
+    // Read the standard template library type
+    auto standard_template_lib = read_standard_template_lib(json);
 
     // Instantiate the translation unit
     auto result = TranslationUnit::new_(filename);

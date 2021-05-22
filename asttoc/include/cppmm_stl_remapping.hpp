@@ -1,7 +1,7 @@
 #pragma once
 
 namespace cppmm {
-enum StandardTemplateLib {
+enum class StandardTemplateLib : uint32_t {
     kstdcpp = 0,
     kcpp = 1,
     // TODO LT : intel
