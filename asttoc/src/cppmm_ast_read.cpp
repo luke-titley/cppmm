@@ -336,7 +336,10 @@ Field read_field(const nln::json& json) {
 }
 
 //------------------------------------------------------------------------------
-NodePtr read_record(const TranslationUnit::Ptr& tu, const nln::json& json) {
+NodePtr read_record(const TranslationUnit::Ptr& tu, const CurrentObject co) {
+    // Get the json object
+    auto json = co.json;
+
     // Dont ignore these
     Id id = json[ID].get<Id>();
     auto size = json[SIZE].get<uint64_t>();
@@ -415,7 +418,9 @@ struct sort_enum_vars {
 };
 
 //------------------------------------------------------------------------------
-NodePtr read_enum(const TranslationUnit::Ptr& tu, const nln::json& json) {
+NodePtr read_enum(const TranslationUnit::Ptr& tu, CurrentObject co) {
+    auto json = co.json;
+
     Id id = json[ID].get<Id>();
     auto size = json[SIZE].get<uint64_t>();
     auto align = json[ALIGN].get<uint64_t>();
@@ -524,9 +529,9 @@ NodePtr read_node(const TranslationUnit::Ptr& tu, const CurrentObject co) {
     auto kind = co.json[KIND].get<std::string>();
 
     if (kind == RECORD_C) {
-        return read_record(tu, co.json);
+        return read_record(tu, co);
     } else if (kind == ENUM_C) {
-        return read_enum(tu, co.json);
+        return read_enum(tu, co);
     } else if (kind == FUNCTION_C) {
         return read_function(tu, co.json);
     } else if (kind == NAMESPACE_C) {
