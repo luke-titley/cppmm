@@ -1530,11 +1530,19 @@ void handle_function_pointer_typedef(const QualType& ty,
 
 /// Detect the version of stl in use by parsing the name of the enum
 void handle_stl_enum(const EnumDecl* ed) {
+    // Get hold of the stl library
     const auto qualified_name = ed->getQualifiedNameAsString();
     const auto stl_library =
         qualified_name.substr(sizeof(CPPMM_stl_library__)-1);
-
     SPDLOG_DEBUG("STL library '{}'", stl_library);
+
+    // Write that out to the translation unit
+    ASTContext& ctx = ed->getASTContext();
+    SourceManager& sm = ctx.getSourceManager();
+    const auto& loc = ed->getLocation();
+    std::string filename = sm.getFilename(loc).str();
+
+    auto* node_tu = get_translation_unit(filename);
 }
 
 /// Clang AST matcher that matches on the decls we're interested in in the
