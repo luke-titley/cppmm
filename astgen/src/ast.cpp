@@ -93,6 +93,7 @@ void NodeTranslationUnit::write_json(json& o) const {
     o["filename"] = qualified_name;
     o["source_includes"] = source_includes;
     o["include_paths"] = project_includes;
+    o["stl"] = stl_library;
     write_json_attrs(o);
 
     o["decls"] = {};

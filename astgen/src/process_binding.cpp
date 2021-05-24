@@ -1534,15 +1534,19 @@ void handle_stl_enum(const EnumDecl* ed) {
     const auto qualified_name = ed->getQualifiedNameAsString();
     const auto stl_library =
         qualified_name.substr(sizeof(CPPMM_stl_library__)-1);
-    SPDLOG_DEBUG("STL library '{}'", stl_library);
 
-    // Write that out to the translation unit
+    // Get hold of the translation unit
     ASTContext& ctx = ed->getASTContext();
     SourceManager& sm = ctx.getSourceManager();
-    const auto& loc = ed->getLocation();
-    std::string filename = sm.getFilename(loc).str();
+    auto main_file_id = sm.getMainFileID();
+    auto file_entry = sm.getFileEntryForID(main_file_id);
+    std::string filename = file_entry->getName().str();
 
+    // Write the library to the translation unit
     auto* node_tu = get_translation_unit(filename);
+    node_tu->stl_library = stl_library;
+
+    SPDLOG_DEBUG("STL library '{}' for {}", stl_library, filename);
 }
 
 /// Clang AST matcher that matches on the decls we're interested in in the

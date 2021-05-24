@@ -74,6 +74,8 @@ struct NodeTranslationUnit : public Node {
     std::vector<std::string> source_includes;
     /// Include paths specified on the cppmm command line
     std::vector<std::string> project_includes;
+    /// The stl library available to this translation unit
+    std::string stl_library;
 
     virtual void write_json(json& o) const override;
 
