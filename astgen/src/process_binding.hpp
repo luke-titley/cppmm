@@ -17,6 +17,10 @@ class ProcessLibraryCallback : public clang::ast_matchers::MatchFinder::MatchCal
     virtual void run(const clang::ast_matchers::MatchFinder::MatchResult& result);
 };
 
+class StlLibraryCallback : public clang::ast_matchers::MatchFinder::MatchCallback {
+    virtual void run(const clang::ast_matchers::MatchFinder::MatchResult& result);
+};
+
 class ProcessBindingConsumer : public clang::ASTConsumer {
     clang::ast_matchers::MatchFinder _match_finder;
     clang::ast_matchers::MatchFinder _library_finder;

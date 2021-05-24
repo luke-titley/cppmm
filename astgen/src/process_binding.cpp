@@ -1591,6 +1591,13 @@ void ProcessBindingCallback::run(const MatchFinder::MatchResult& result) {
     }
 }
 
+/// Detect the version of stl in use by parsing the name of the enum
+void handle_stl_enum(const EnumDecl* ed) {
+    SPDLOG_DEBUG("STL enum {}", ed->getQualifiedNameAsString());
+
+    // pystring::replace(fd->getQualifiedNameAsString(), "cppmm_bind::", "");
+}
+
 /// Clang AST matcher that matches on the decls we're interested in in the
 /// library and dispatches to our handling functions
 void ProcessLibraryCallback::run(const MatchFinder::MatchResult& result) {
@@ -1603,6 +1610,9 @@ void ProcessLibraryCallback::run(const MatchFinder::MatchResult& result) {
     } else if (const VarDecl* vd =
                    result.Nodes.getNodeAs<VarDecl>("libraryVarDecl")) {
         handle_library_var(vd);
+    } else if (const EnumDecl* ed =
+                   result.Nodes.getNodeAs<EnumDecl>("stlEnum")) {
+        handle_stl_enum(ed);
     }
 }
 
@@ -1697,6 +1707,14 @@ void ProcessBindingConsumer::HandleTranslationUnit(ASTContext& context) {
                     unless(hasAncestor(namespaceDecl(hasName("cppmm_bind")))))
                 .bind("libraryVarDecl");
         _library_finder.addMatcher(var_decl_matcher, &_library_handler);
+    }
+
+    // and a matcher for stl enum
+    SPDLOG_DEBUG("Adding matcher for stl enum");
+    {
+        DeclarationMatcher enum_decl_matcher =
+            enumDecl(matchesName("CPPMM_stl_library__.*")).bind("stlEnum");
+        _library_finder.addMatcher(enum_decl_matcher, &_library_handler);
     }
 
     _library_finder.matchAST(context);
