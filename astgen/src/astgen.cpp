@@ -106,13 +106,12 @@ int main(int argc_, const char** argv_) {
 
     // FIXME: there's got to be a more sensible way of doing this but I can't
     // figure it out...
-    int argc = argc_ + 2;
-    const char** argv = new const char*[argc + 1];
+    std::vector<const char *> argv;
     int i;
     bool has_ddash = false;
     for (i = 0; i < argc_; ++i) {
-        argv[i] = argv_[i];
-        if (!strcmp(argv[i], "--")) {
+        argv.push_back(argv_[i]);
+        if (!strcmp(argv_[i], "--")) {
             has_ddash = true;
         }
     }
@@ -132,18 +131,19 @@ int main(int argc_, const char** argv_) {
     // if the user didn't add a double dash to the arguments list, we need
     // to insert one here so we can pass arguments to clang
     if (!has_ddash) {
-        argv[i++] = "--";
-        argc++;
+        argv.push_back("--");
     }
 
     // add our virtual header path
-    argv[i++] = "-isystem";
-    argv[i++] = "/CPPMM_VIRTUAL_INCLUDES";
+    argv.push_back("-isystem");
+    argv.push_back("/CPPMM_VIRTUAL_INCLUDES");
 
     // grab any user-specified include directories from the command line
-    cppmm::PROJECT_INCLUDES = parse_project_includes(argc, argv, cwd);
+    cppmm::PROJECT_INCLUDES = parse_project_includes(argv.size(), argv.data(),
+                                                     cwd);
 
-    CommonOptionsParser OptionsParser(argc, argv, CppmmCategory);
+    int argc_o = argv.size();
+    CommonOptionsParser OptionsParser(argc_o, argv.data(), CppmmCategory);
 
     // Set up logging
     switch (opt_verbosity) {
