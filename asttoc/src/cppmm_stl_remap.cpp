@@ -3,6 +3,9 @@
 //------------------------------------------------------------------------------
 #include "cppmm_stl_remap.hpp"
 
+// _LIBCPP_VERSION = libc++
+// __GLIBCXX__ = libstdc++
+
 namespace cppmm {
 namespace remap {
 
