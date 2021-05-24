@@ -29,6 +29,8 @@ namespace fs = ghc::filesystem;
 #include "ast.hpp"
 #include "ast_utils.hpp"
 
+static const char CPPMM_stl_library__[] = "CPPMM_stl_library__";
+
 using namespace clang;
 using namespace clang::ast_matchers;
 namespace ps = pystring;
@@ -1526,6 +1528,15 @@ void handle_function_pointer_typedef(const QualType& ty,
     node_tu->children.push_back(id);
 }
 
+/// Detect the version of stl in use by parsing the name of the enum
+void handle_stl_enum(const EnumDecl* ed) {
+    const auto qualified_name = ed->getQualifiedNameAsString();
+    const auto stl_library =
+        qualified_name.substr(sizeof(CPPMM_stl_library__)-1);
+
+    SPDLOG_DEBUG("STL library '{}'", stl_library);
+}
+
 /// Clang AST matcher that matches on the decls we're interested in in the
 /// bindings and dispatches to our handling functions
 void ProcessBindingCallback::run(const MatchFinder::MatchResult& result) {
@@ -1589,13 +1600,6 @@ void ProcessBindingCallback::run(const MatchFinder::MatchResult& result) {
             }
         }
     }
-}
-
-/// Detect the version of stl in use by parsing the name of the enum
-void handle_stl_enum(const EnumDecl* ed) {
-    SPDLOG_DEBUG("STL enum {}", ed->getQualifiedNameAsString());
-
-    // pystring::replace(fd->getQualifiedNameAsString(), "cppmm_bind::", "");
 }
 
 /// Clang AST matcher that matches on the decls we're interested in in the
@@ -1663,6 +1667,8 @@ ProcessBindingConsumer::ProcessBindingConsumer(ASTContext* context) {
                            unless(anyOf(isImplicit(), parmVarDecl())))
             .bind("namespaceAliasDecl");
     _match_finder.addMatcher(namespace_alias_decl_matcher, &_handler);
+
+    // and a matcher for stl enum
 }
 
 /// Run the binding AST matcher, then run secondary matchers to find functions
@@ -1713,7 +1719,7 @@ void ProcessBindingConsumer::HandleTranslationUnit(ASTContext& context) {
     SPDLOG_DEBUG("Adding matcher for stl enum");
     {
         DeclarationMatcher enum_decl_matcher =
-            enumDecl(matchesName("CPPMM_stl_library__.*")).bind("stlEnum");
+            enumDecl(matchesName(CPPMM_stl_library__)).bind("stlEnum");
         _library_finder.addMatcher(enum_decl_matcher, &_library_handler);
     }
 

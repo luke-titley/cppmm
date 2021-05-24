@@ -217,7 +217,7 @@ int main(int argc_, const char** argv_) {
 
 #include <cstddef>
 #if defined(_LIBCPP_VERSION) // libc++
-enum CPPMM_stl_libary__libcpp {};
+enum CPPMM_stl_library__libcpp {};
 #elif defined(__GLIBCXX__) // libstdc++
 enum CPPMM_stl_library__libstdcpp {};
 #else
