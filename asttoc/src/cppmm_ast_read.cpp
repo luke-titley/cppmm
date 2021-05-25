@@ -566,12 +566,12 @@ StandardTemplateLib read_standard_template_lib(const nln::json& json) {
     if (stl_ != json.end()) {
 
         // stdcpp
-        if (stl_->get<std::string>() == "stdcpp") {
+        if (stl_->get<std::string>() == "libstdcpp") {
             stl = StandardTemplateLib::kstdcpp;
         }
 
         // cpp
-        else if (stl_->get<std::string>() == "cpp") {
+        else if (stl_->get<std::string>() == "libcpp") {
             stl = StandardTemplateLib::kcpp;
         }
     }
