@@ -3,7 +3,6 @@
 //------------------------------------------------------------------------------
 #include "cppmm_stl_remap.hpp"
 #include "pystring.h"
-#include <iostream>
 
 // _LIBCPP_VERSION = libc++
 // __GLIBCXX__ = libstdc++
@@ -18,9 +17,8 @@ namespace libcpp {
 //------------------------------------------------------------------------------
 Remapped namespace_(const std::string& qualified, const std::string& short_) {
 
-    //std::cerr << "namespace info " << qualified << std::endl;
     if (qualified == "std::__1") {
-        return Remapped{"std", ""};
+        return Remapped{"", ""};
     }
 
     return Remapped{qualified, short_};
@@ -28,13 +26,8 @@ Remapped namespace_(const std::string& qualified, const std::string& short_) {
 
 Remapped record(const std::string& qualified, const std::string& short_) {
     if (pystring::startswith(qualified, std::string("std::__1"))) {
-        auto new_qualified =
-            pystring::replace(qualified,
-                              std::string("std::__1::"),
-                              std::string("std::")
-            );
-        std::cerr << "    record info " << qualified << std::endl;
-        std::cerr << "new record info " << new_qualified << std::endl;
+        auto new_qualified = pystring::replace(
+            qualified, std::string("std::__1::"), std::string("std::"));
         return Remapped{new_qualified, short_};
     }
 

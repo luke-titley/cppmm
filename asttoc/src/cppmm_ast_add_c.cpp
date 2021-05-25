@@ -285,9 +285,12 @@ std::string compute_qualified_name(const TypeRegistry& type_registry,
                                    const std::vector<NodeId>& namespaces,
                                    const std::string& alias) {
     std::string result;
-    for (const auto& ns : namespaces) {
-        result += type_registry.find_namespace(ns);
-        result += "_";
+    for (const auto& i : namespaces) {
+        auto ns = type_registry.find_namespace(i);
+        if (ns[0] != '\0') {
+            result += ns;
+            result += "_";
+        }
     }
 
     result += alias;
@@ -309,8 +312,10 @@ std::string compute_qualified_nice_name(const TypeRegistry& type_registry,
             // into this single alias
             result = p.first + "_";
         } else {
-            result += p.first;
-            result += "_";
+            if (p.first[0] != '\0') {
+                result += p.first;
+                result += "_";
+            }
         }
     }
 
@@ -1377,8 +1382,7 @@ void record_method(TypeRegistry& type_registry, TranslationUnit& c_tu,
     }
     if (cpp_method.is_copy_constructor) {
         method_type = MethodType::CopyConstructor;
-    }
-    else if (cpp_method.is_move_constructor) {
+    } else if (cpp_method.is_move_constructor) {
         method_type = MethodType::MoveConstructor;
     }
 
